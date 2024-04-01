@@ -34,18 +34,22 @@ export default function Index() {
         ></textarea>
       </div>
       <div className="w-1/3 m-4 p-4 rounded-xl bg-slate-300 text-200">
-        <LabeledText label="文字数">{Array.from(value).length}文字</LabeledText>
-        <LabeledText label="文字数（空白を除く）">
-          {Array.from(value.replace(/\s/g, "")).length}文字
-        </LabeledText>
-        <LabeledText label="全角文字数（半角文字を0.5文字でカウントする）">
-          {Array.from(value).reduce((acc, char) => {
-            // eslint-disable-next-line no-control-regex
-            return acc + (char.match(/[^\x01-\x7E]/) ? 1 : 0.5);
-          }, 0)}
-          文字
-        </LabeledText>
-        <LabeledText label="行数">{value.split("\n").length}行</LabeledText>
+        <div className="space-y-2">
+          <LabeledText label="文字数">
+            {Array.from(value).length}文字
+          </LabeledText>
+          <LabeledText label="文字数（空白を除く）">
+            {Array.from(value.replace(/\s/g, "")).length}文字
+          </LabeledText>
+          <LabeledText label="全角文字数（半角文字を0.5文字でカウントする）">
+            {Array.from(value).reduce((acc, char) => {
+              // eslint-disable-next-line no-control-regex
+              return acc + (char.match(/[^\x01-\x7E]/) ? 1 : 0.5);
+            }, 0)}
+            文字
+          </LabeledText>
+          <LabeledText label="行数">{value.split("\n").length}行</LabeledText>
+        </div>
       </div>
     </div>
   );
