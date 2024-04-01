@@ -1,6 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
 import { useCallback, useState } from "react";
-import { encode } from "iconv-lite";
+import iconv from "iconv-lite";
 
 export const meta: MetaFunction = () => {
   return [
@@ -79,5 +79,5 @@ const LabeledText: React.FC<{ label: string; children: React.ReactNode }> = ({
 type Encoding = "UTF-8" | "Shift_JIS";
 
 function encodeCount(value: string, encoding: Encoding): number {
-  return encode(value, encoding).length;
+  return iconv.encode(value, encoding).length;
 }
