@@ -1,5 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
 import { useCallback, useState } from "react";
+import { encode } from "iconv-lite";
 
 export const meta: MetaFunction = () => {
   return [
@@ -49,6 +50,12 @@ export default function Index() {
             文字
           </LabeledText>
           <LabeledText label="行数">{value.split("\n").length}行</LabeledText>
+          <LabeledText label="バイト数（UTF-8）">
+            {encodeCount(value, "UTF-8")}バイト
+          </LabeledText>
+          <LabeledText label="バイト数（Shift_JIS）">
+            {encodeCount(value, "Shift_JIS")}バイト
+          </LabeledText>
         </div>
       </div>
     </div>
@@ -68,3 +75,9 @@ const LabeledText: React.FC<{ label: string; children: React.ReactNode }> = ({
     </dl>
   );
 };
+
+type Encoding = "UTF-8" | "Shift_JIS";
+
+function encodeCount(value: string, encoding: Encoding): number {
+  return encode(value, encoding).length;
+}
