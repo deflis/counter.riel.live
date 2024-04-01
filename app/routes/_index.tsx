@@ -1,6 +1,7 @@
 import type { MetaFunction } from "@remix-run/node";
 import { useCallback, useState } from "react";
 import iconv from "iconv-lite";
+import clsx from "clsx";
 
 export const meta: MetaFunction = () => {
   return [
@@ -11,10 +12,18 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   const [value, setValue] = useState("");
+  const [monoFont, setMonoFont] = useState(false);
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setValue(e.target.value);
+    },
+    []
+  );
+
+  const handleCheckMonoFont = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setMonoFont(e.target.checked);
     },
     []
   );
@@ -28,7 +37,10 @@ export default function Index() {
         <textarea
           id="text"
           name="text"
-          className="w-full h-[calc(100%-2rem)] bg-white text-black"
+          className={clsx([
+            "w-full h-[calc(100%-2rem)] bg-white text-black",
+            monoFont ? "font-mono" : "font-sans",
+          ])}
           placeholder="ここにテキストを入力..."
           value={value}
           onChange={handleChange}
@@ -54,6 +66,13 @@ export default function Index() {
           <LabeledText label="バイト数（Shift_JIS）">
             {encodeCount(value, "Shift_JIS")}バイト
           </LabeledText>
+          <input
+            checked={monoFont}
+            type="checkbox"
+            onChange={handleCheckMonoFont}
+            id="monoFont"
+          />
+          <label htmlFor="monoFont">等幅フォントで表示する</label>
         </div>
       </div>
     </div>
