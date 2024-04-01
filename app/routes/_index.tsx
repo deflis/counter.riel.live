@@ -1,5 +1,5 @@
 import type { MetaFunction } from "@remix-run/node";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import iconv from "iconv-lite";
 import clsx from "clsx";
 
@@ -13,6 +13,11 @@ export const meta: MetaFunction = () => {
 export default function Index() {
   const [value, setValue] = useState("");
   const [monoFont, setMonoFont] = useState(false);
+  const [lineSizeString, setLineSizeString] = useState("80");
+  const lineSize = useMemo(
+    () => parseInt(lineSizeString, 10),
+    [lineSizeString]
+  );
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -60,19 +65,32 @@ export default function Index() {
             文字
           </LabeledText>
           <LabeledText label="行数">{value.split("\n").length}行</LabeledText>
+          <div>
+            <label htmlFor="lineSize">1行の文字数：</label>
+            <input
+              type="number"
+              value={lineSizeString}
+              onChange={(e) => setLineSizeString(e.target.value)}
+            />
+          </div>
+          <LabeledText label="行数（1行の文字数で計算）">
+            {countLineCountByLineSize(value, lineSize)}行
+          </LabeledText>
           <LabeledText label="バイト数（UTF-8）">
             {encodeCount(value, "UTF-8")}バイト
           </LabeledText>
           <LabeledText label="バイト数（Shift_JIS）">
             {encodeCount(value, "Shift_JIS")}バイト
           </LabeledText>
-          <input
-            checked={monoFont}
-            type="checkbox"
-            onChange={handleCheckMonoFont}
-            id="monoFont"
-          />
-          <label htmlFor="monoFont">等幅フォントで表示する</label>
+          <div>
+            <input
+              checked={monoFont}
+              type="checkbox"
+              onChange={handleCheckMonoFont}
+              id="monoFont"
+            />
+            <label htmlFor="monoFont">等幅フォントで表示する</label>
+          </div>
         </div>
       </div>
     </div>
@@ -101,6 +119,12 @@ function countGrapheme(value: string) {
     return Array.from(value).length;
   }
   return Array.from(segmenter.segment(value)).length;
+}
+
+function countLineCountByLineSize(value: string, lineSize: number) {
+  return value.split("\n").reduce((acc, line) => {
+    return acc + Math.ceil(countGrapheme(line) / lineSize);
+  }, 0);
 }
 
 type Encoding = "UTF-8" | "Shift_JIS";
