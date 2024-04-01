@@ -1,32 +1,66 @@
 import type { MetaFunction } from "@remix-run/node";
+import { useCallback, useState } from "react";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "New Remix SPA" },
-    { name: "description", content: "Welcome to Remix (SPA Mode)!" },
+    { title: "テキストカウンター" },
+    { name: "description", content: "テキストの文字数を数えます" },
   ];
 };
 
 export default function Index() {
+  const [value, setValue] = useState("");
+
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setValue(e.target.value);
+    },
+    []
+  );
+
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <h1>Welcome to Remix (SPA Mode)</h1>
-      <ul>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/future/spa-mode"
-            rel="noreferrer"
-          >
-            SPA Mode Guide
-          </a>
-        </li>
-        <li>
-          <a target="_blank" href="https://remix.run/docs" rel="noreferrer">
-            Remix Docs
-          </a>
-        </li>
-      </ul>
+    <div className="flex flex-row w-full h-dvh">
+      <div className="w-2/3 m-4 p-4 rounded-xl bg-slate-300">
+        <div className="h-8 text-slate-800">
+          <label htmlFor="text">カウントしたいテキスト：</label>
+        </div>
+        <textarea
+          id="text"
+          name="text"
+          className="w-full h-[calc(100%-2rem)] bg-white text-black"
+          placeholder="ここにテキストを入力..."
+          value={value}
+          onChange={handleChange}
+        ></textarea>
+      </div>
+      <div className="w-1/3 m-4 p-4 rounded-xl bg-slate-300 text-200">
+        <LabeledText label="文字数">{Array.from(value).length}文字</LabeledText>
+        <LabeledText label="文字数（空白を除く）">
+          {Array.from(value.replace(/\s/g, "")).length}文字
+        </LabeledText>
+        <LabeledText label="全角文字数（半角文字を0.5文字でカウントする）">
+          {Array.from(value).reduce((acc, char) => {
+            // eslint-disable-next-line no-control-regex
+            return acc + (char.match(/[^\x01-\x7E]/) ? 1 : 0.5);
+          }, 0)}
+          文字
+        </LabeledText>
+        <LabeledText label="行数">{value.split("\n").length}行</LabeledText>
+      </div>
     </div>
   );
 }
+
+const LabeledText: React.FC<{ label: string; children: React.ReactNode }> = ({
+  label,
+  children,
+}) => {
+  return (
+    <dl>
+      <dt className="rounded-xl rounded-b-none bg-slate-200 ps-2">{label}</dt>
+      <dd className="rounded-xl rounded-t-none bg-slate-100 ps-2">
+        {children}
+      </dd>
+    </dl>
+  );
+};
