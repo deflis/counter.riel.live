@@ -36,11 +36,9 @@ export default function Index() {
       </div>
       <div className="w-1/3 m-4 p-4 rounded-xl bg-slate-300 text-200">
         <div className="space-y-2">
-          <LabeledText label="文字数">
-            {Array.from(value).length}文字
-          </LabeledText>
+          <LabeledText label="文字数">{countGrapheme(value)}文字</LabeledText>
           <LabeledText label="文字数（空白を除く）">
-            {Array.from(value.replace(/\s/g, "")).length}文字
+            {countGrapheme(value.replace(/\s/g, ""))}文字
           </LabeledText>
           <LabeledText label="全角文字数（半角文字を0.5文字でカウントする）">
             {Array.from(value).reduce((acc, char) => {
@@ -75,6 +73,16 @@ const LabeledText: React.FC<{ label: string; children: React.ReactNode }> = ({
     </dl>
   );
 };
+
+const segmenter = Intl.Segmenter
+  ? new Intl.Segmenter("ja", { granularity: "grapheme" })
+  : null;
+function countGrapheme(value: string) {
+  if (!segmenter) {
+    return Array.from(value).length;
+  }
+  return Array.from(segmenter.segment(value)).length;
+}
 
 type Encoding = "UTF-8" | "Shift_JIS";
 
