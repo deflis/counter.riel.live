@@ -47,6 +47,7 @@ module.exports = {
         "import/resolver": {
           typescript: {},
         },
+        "react/prop-types": "off",
       },
     },
 
